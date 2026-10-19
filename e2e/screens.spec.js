@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { DEFAULT_LANG, dict, otherLang, pageTitle } from "../src/lib/lang.js";
+import { makeFixtures } from "./keys.mjs";
 
 // `make ui-shots` runs this file. It writes ui-shots/<screen>-<width>-<lang>-<theme>.png for every
 // screen at 375, 768 and 1280 px: the default language in both themes, the other language in
@@ -13,6 +14,12 @@ const RUNS = [
   [otherLang(DEFAULT_LANG), "light"],
 ];
 const MISSING = "/no-such-page"; // the not-found screen is a 404 on purpose
+
+let fx;
+test.beforeAll(() => {
+  fx = makeFixtures();
+});
+test.afterAll(() => fx?.cleanup());
 
 // <title> elements in the document (not an SVG's). toHaveTitle reads only the first one, so a second
 // title (a layout or metadata default next to the page's own) would pass it unnoticed.
@@ -28,9 +35,9 @@ function watch(page) {
   page.on("pageerror", (e) => problems.push(`pageerror: ${e.message}`));
   page.on("console", (m) => {
     if (m.type() !== "error") return;
-    // Expected: the deliberate 404, and the 401 a visitor without a session gets from the session probe.
+    // Expected: the deliberate 404 of the not-found screen.
     const url = m.location().url;
-    if (url.endsWith(MISSING) || m.text().includes("status of 401")) return;
+    if (url.endsWith(MISSING)) return;
     problems.push(`console: ${m.text()} (${url})`);
   });
   return problems;
@@ -51,7 +58,6 @@ async function choose(page, lang, theme) {
 }
 
 async function shoot(page, screen, title, width, lang, theme) {
-  // .lang-toggle is a link on a public page (the language is in its URL), a button elsewhere.
   for (const toggle of ["theme-toggle", "lang-toggle"]) {
     await expect(
       page.locator(`.${toggle}`),
@@ -72,6 +78,7 @@ async function shoot(page, screen, title, width, lang, theme) {
     overflow,
     `${screen} scrolls horizontally at ${width}px`,
   ).toBeLessThanOrEqual(0);
+  await page.waitForTimeout(250); // the result panel rises in 160ms
   await page.screenshot({
     path: `ui-shots/${screen}-${width}-${lang}-${theme}.png`,
     fullPage: true,
@@ -86,33 +93,57 @@ for (const width of WIDTHS) {
       viewport: { width, height: 800 },
       colorScheme: "light",
     });
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
     const page = await context.newPage();
     const problems = watch(page);
+    const a = fx.keys.ed25519;
+    const b = fx.keys.ed25519b;
 
     for (const [lang, theme] of RUNS) {
       const t = dict(lang);
-      await page.goto("/login");
+      const fill = async (priv, pub) => {
+        await page.locator("#key-private").fill(priv);
+        await page.locator("#key-public").fill(pub);
+      };
+      const submit = () =>
+        page
+          .getByRole("button", { name: t.actions.check, exact: true })
+          .click();
+
+      await page.goto("/");
       await choose(page, lang, theme);
-      await shoot(page, "login", t.login.title, width, lang, theme);
+      await shoot(page, "empty", t.meta.title, width, lang, theme);
 
-      // The legal pages are linked from sign-in, in the language that is showing.
-      await page.getByRole("link", { name: t.pages.privacy.title }).click();
-      await expect(
-        page.getByRole("heading", { name: t.pages.privacy.title }),
-      ).toBeVisible();
-      await shoot(page, "privacy", t.pages.privacy.title, width, lang, theme);
-      await page.goto("/login");
+      await fill(a.private, a.public);
+      await submit();
+      await expect(page.locator(".result h2")).toContainText(
+        t.result.match.title,
+      );
+      await shoot(page, "match", t.meta.title, width, lang, theme);
 
-      await page.getByLabel(t.login.email).fill("admin@example.com");
-      await page.getByLabel(t.login.password).fill("password123");
+      await fill(a.private, b.public);
+      await submit();
+      await expect(page.locator(".result h2")).toContainText(
+        t.result.mismatch.title,
+      );
+      await shoot(page, "mismatch", t.meta.title, width, lang, theme);
+
+      await fill(a.public, "halo dunia");
+      await submit();
+      await expect(page.locator("#key-private-status")).toHaveAttribute(
+        "data-state",
+        "error",
+      );
+      await shoot(page, "error", t.meta.title, width, lang, theme);
+
       await page
-        .getByRole("button", { name: t.login.submit, exact: true })
+        .getByRole("button", { name: t.footer.privacy, exact: true })
         .click();
-      await expect(page.getByText("admin@example.com")).toBeVisible();
-      await shoot(page, "dashboard", t.dashboard.title, width, lang, theme);
+      await expect(page.getByRole("dialog")).toBeVisible();
+      await page.waitForTimeout(300); // the sheet slides in
+      await shoot(page, "dialog", t.meta.title, width, lang, theme);
+      await page.keyboard.press("Escape");
 
-      await page.getByRole("button", { name: t.dashboard.signOut }).click();
-      await expect(page).toHaveURL(/\/login$/);
       await page.goto(MISSING);
       await shoot(page, "not-found", t.notFound.title, width, lang, theme);
     }
@@ -130,7 +161,7 @@ test("a first visit follows the OS; the toggle overrides it and the choice survi
     browser.newContext({ colorScheme: "light" }),
   ]);
   const [d, l] = await Promise.all([dark.newPage(), light.newPage()]);
-  await Promise.all([d.goto("/login"), l.goto("/login")]);
+  await Promise.all([d.goto("/"), l.goto("/")]);
   const background = (p) =>
     p.evaluate(() => getComputedStyle(document.body).backgroundColor);
 

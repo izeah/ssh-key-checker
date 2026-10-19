@@ -2,6 +2,21 @@
 
 > Generated on 2026-10-19 with [Vibe Coding Boilerplate Generator](https://github.com/izeah01/vibe-gen)
 
+## What it is
+
+One page that tells you whether an SSH private key and a public key are a pair. Paste the keys or choose the files
+(`.pem`, `id_ed25519`, `.pub`). Everything runs in the browser with WebCrypto: no backend, no network request after the
+page loads, and the CSP (`connect-src 'none'`) makes the browser refuse one. Indonesian and English, light and dark.
+
+```bash
+npm ci
+make run          # http://localhost:5173
+make test         # unit tests (needs ssh-keygen: real keys are made per run and deleted)
+make test-e2e     # Playwright against the production build, so the real CSP applies
+make ui-shots     # screenshots into ui-shots/ (open them and look)
+make check        # lint, tests, audit, semgrep, build
+```
+
 ## Stack
 
 - **Language**: javascript

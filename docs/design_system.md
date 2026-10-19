@@ -45,8 +45,9 @@
   cookie, allowlisted to `light` or `dark` because it lands in HTML. The Vite SPAs load `public/theme.js` as a
   blocking script in `<head>`. Never replace this with an inline `<script>` or `'unsafe-inline'`.
 - The toggle is one `<button class="theme-toggle" aria-pressed>` (`ThemeToggle`), mounted once in the root layout
-  inside `.prefs` next to `LangToggle`, with a text label from the dictionaries (`theme.dark`; the e2e finds it by its
-  class). No second control and no icon-only variant.
+  inside `.prefs` next to `LangToggle`. It is an icon button on the developer's request (2026-10-19): a moon while light,
+  a sun while dark, with the name in `aria-label` and `title` from the dictionaries (`theme.dark`; the e2e finds it by its
+  class). No second control.
 - UI work is done only after both themes were checked: contrast pairs for each, screenshots for each.
 
 ## 4. Components
@@ -130,9 +131,10 @@
   a new key in **both** files; `src/lib/lang.test` fail when one is missing.
 - Not translated: data from the API (user names, `roles.name`, anything a user typed or an admin edited) and the
   values in form fields.
-- `LangToggle` is one `<button class="lang-toggle">` labelled with the other language's name in that language (its
-  `lang` attribute set, so a screen reader pronounces it right), next to `ThemeToggle` on every screen, the not-found
-  and error screens included.
+- `LangToggle` is an inline `<nav class="lang">` with a globe icon: the language showing is plain text (`aria-current`), the
+  other language is one `<button class="lang-toggle">` styled as a link, its `lang` attribute set so a screen reader
+  pronounces it right. It sits next to `ThemeToggle` on every screen, the not-found and error screens included. (Changed
+  from a single toggle button on the developer's request, 2026-10-19.)
 - A switch re-renders in place: no navigation and no reload, so a form keeps what the user typed. It writes the `lang`
   cookie (functional, one year) and `<html lang>`, which always matches what is shown. The server reads the cookie,
   allowlisted to `id` or `en`; without it `DEFAULT_LANG` decides, never `Accept-Language` (many browsers in Indonesia

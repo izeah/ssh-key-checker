@@ -1,15 +1,16 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import "@fontsource-variable/instrument-sans/wght.css";
+import "@fontsource/ibm-plex-mono/latin-400.css";
+import "@fontsource/ibm-plex-mono/latin-500.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { RouterProvider } from "react-router";
 import { LangToggle } from "./components/atoms/LangToggle.jsx";
 import { ThemeToggle } from "./components/atoms/ThemeToggle.jsx";
 import { currentLang } from "./lib/lang-client.js";
 import { LangProvider } from "./lib/lang-context.jsx";
-import { router } from "./router.jsx";
+import { CheckerPage } from "./pages/CheckerPage.jsx";
+import { NotFoundPage } from "./pages/NotFoundPage.jsx";
 import "./styles/globals.css";
 
-const queryClient = new QueryClient();
 const root = document.getElementById("root");
 if (!root) throw new Error("#root missing in index.html");
 
@@ -17,16 +18,22 @@ if (!root) throw new Error("#root missing in index.html");
 const lang = currentLang();
 document.documentElement.lang = lang;
 
+// One page at "/"; any other path is the not-found screen. No router: nothing else to route to.
+const Page = location.pathname === "/" ? CheckerPage : NotFoundPage;
+
 createRoot(root).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <LangProvider initial={lang}>
+    <LangProvider initial={lang}>
+      <header className="top">
+        <a className="brand" href="/">
+          SSH Key Checker
+        </a>
         <div className="prefs">
           <LangToggle />
           <ThemeToggle />
         </div>
-        <RouterProvider router={router} />
-      </LangProvider>
-    </QueryClientProvider>
+      </header>
+      <Page />
+    </LangProvider>
   </StrictMode>,
 );

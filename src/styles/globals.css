@@ -1,23 +1,40 @@
-/* Neutral scaffold: replace the tokens with the project's design direction (DESIGN.md, docs/design_system.md). */
+/* Tokens follow DESIGN.md: paper and ink, one brass accent for the primary action, green and red
+   only in a result. Every text/background pair was checked with check_contrast (ratios in DESIGN.md). */
 :root {
-  --bg: #fafafa;
-  --fg: #18181b;
-  --muted: #52525b;
-  --border: #85858f;
-  --accent: #1d4ed8;
+  --bg: #f5f3ee;
+  --surface: #fffdf8;
+  --fg: #1b1a17;
+  --muted: #5c5850;
+  --border: #8a857a; /* input edges: 3:1 on both backgrounds */
+  --rule: #d9d4c7; /* decorative separators, not a UI boundary */
+  --hover: #ebe7dc;
+  --accent: #8a5a00;
   --accent-fg: #ffffff;
-  --danger: #b91c1c;
+  --ok: #1d6b3c;
+  --danger: #a4281c;
+  --scrim: rgb(20 19 15 / 0.5);
+  --shadow-sheet: 0 0 2rem rgb(20 19 15 / 0.25);
   --radius: 8px;
-  --font-sans: system-ui, sans-serif;
+  --radius-lg: 12px;
+  --font-sans: "Instrument Sans Variable", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
   --space-4: 1rem;
   --space-6: 1.5rem;
   --space-8: 2rem;
-  --text-sm: 0.875rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --gutter: clamp(1rem, 4vw, 2rem);
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
   --text-base: 1rem;
-  --text-xl: 1.5rem;
+  --text-md: 1.125rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.75rem;
+  --text-2xl: clamp(2rem, 5vw, 3.25rem);
+  --measure: 68ch;
   color-scheme: light;
 }
 
@@ -25,25 +42,35 @@
    ponytail: the dark values are written twice. light-dark() would keep one list, at the cost of
    browsers older than Chrome 123 / Firefox 120 / Safari 17.5. */
 :root[data-theme="dark"] {
-  --bg: #18181b;
-  --fg: #f4f4f5;
-  --muted: #a1a1aa;
-  --border: #6e6e78;
-  --accent: #93c5fd;
-  --accent-fg: #18181b;
-  --danger: #fca5a5;
+  --bg: #14130f;
+  --surface: #1d1b17;
+  --fg: #ece7dc;
+  --muted: #a59f92;
+  --border: #6f6a5f;
+  --rule: #34312a;
+  --hover: #26231d;
+  --accent: #e9b54a;
+  --accent-fg: #14130f;
+  --ok: #7bd69a;
+  --danger: #f2998d;
+  --scrim: rgb(0 0 0 / 0.6);
   color-scheme: dark;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
-    --bg: #18181b;
-    --fg: #f4f4f5;
-    --muted: #a1a1aa;
-    --border: #6e6e78;
-    --accent: #93c5fd;
-    --accent-fg: #18181b;
-    --danger: #fca5a5;
+    --bg: #14130f;
+    --surface: #1d1b17;
+    --fg: #ece7dc;
+    --muted: #a59f92;
+    --border: #6f6a5f;
+    --rule: #34312a;
+    --hover: #26231d;
+    --accent: #e9b54a;
+    --accent-fg: #14130f;
+    --ok: #7bd69a;
+    --danger: #f2998d;
+    --scrim: rgb(0 0 0 / 0.6);
     color-scheme: dark;
   }
 }
@@ -55,37 +82,27 @@
 body {
   margin: 0;
   min-height: 100dvh;
-  display: grid;
-  /* Rows as tall as their content, together in the middle: an empty body child a framework adds
-     (Nuxt's #teleports, Next's route announcer) is a row of its own and must not take half the height.
-     No place-items: the framework's mount element keeps the full width, so a card is as wide as
-     its own width says, not as wide as its text (which would change with the language). */
-  align-content: center;
-  padding: var(--space-4);
   background: var(--bg);
   color: var(--fg);
-  font: var(--text-base) / 1.5 var(--font-sans);
+  font: var(--text-base) / 1.55 var(--font-sans);
+  -webkit-text-size-adjust: 100%;
 }
 
-.card {
-  width: min(100%, 24rem);
-  margin-inline: auto; /* centred in the full-width mount element */
-  padding: var(--space-6);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+body:has(dialog[open]) {
+  overflow: hidden;
 }
 
-.stack > * + * {
-  margin-top: var(--space-4);
-}
-
-h1 {
+h1,
+h2,
+h3 {
   margin: 0;
-  font-size: var(--text-xl);
+  font-weight: 600;
+  letter-spacing: -0.01em;
   text-wrap: balance;
 }
 
 p {
+  margin: 0;
   text-wrap: pretty;
 }
 
@@ -93,36 +110,41 @@ a {
   color: var(--accent);
 }
 
-.field {
-  display: grid;
-  gap: var(--space-1);
+code,
+kbd {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  overflow-wrap: anywhere;
 }
 
-input,
-button {
-  font: inherit;
-  min-height: 2.75rem;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
+/* Inline code and key caps read as small chips so a path, a command or a shortcut stands out of the prose. */
+code:not(.fp),
+kbd {
+  padding: 0.1em 0.4em;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--hover);
+  color: var(--fg);
 }
 
-input {
-  background: transparent;
-  color: inherit;
+kbd {
+  padding-block: 0.05em;
+  border-bottom-width: 2px;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
-button {
-  width: 100%;
-  background: var(--accent);
-  color: var(--accent-fg);
-  border-color: var(--accent);
-  cursor: pointer;
+.muted {
+  color: var(--muted);
 }
 
-button:disabled {
-  opacity: 0.6;
-  cursor: progress;
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 :focus-visible {
@@ -130,76 +152,631 @@ button:disabled {
   outline-offset: 2px;
 }
 
-.error {
-  color: var(--danger);
-  min-height: 1.5em;
-  margin: 0;
-}
+/* ---- top bar ---- */
 
-.profile {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--space-1) var(--space-4);
-}
-
-.profile dt {
-  color: var(--muted);
-}
-
-.profile dd {
-  margin: 0;
-}
-
-/* LangToggle and ThemeToggle: top right of the page; the theme toggle is filled while dark mode is on. */
-.prefs {
-  position: absolute;
-  inset: var(--space-4) var(--space-4) auto auto;
+.top {
   display: flex;
-  gap: var(--space-2);
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  max-width: 72rem;
+  margin-inline: auto;
+  padding: var(--space-3) var(--gutter);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  color: var(--fg);
+  font: 500 var(--text-sm) var(--font-mono);
+  text-decoration: none;
+}
+
+/* LangToggle and ThemeToggle: the theme toggle is filled while dark mode is on. */
+.prefs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
 }
 
 .prefs button,
 .prefs a {
-  width: auto;
-  background: transparent;
-  color: var(--fg);
-  border-color: var(--border);
-}
-
-/* On a public page LangToggle is a link (the language is in the URL): the same box as a button. */
-.prefs a {
-  display: inline-flex;
-  align-items: center;
   min-height: 2.75rem;
   padding: var(--space-2) var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  text-decoration: none;
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  font-size: var(--text-sm);
+  cursor: pointer;
 }
 
-/* Links to the legal pages under the sign-in form, each a full tap target. */
-.legal {
+.prefs button:hover {
+  background: var(--hover);
+}
+
+.prefs .lang {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0 var(--space-4);
-  margin-bottom: 0;
+  align-items: center;
+  gap: var(--space-2);
+  padding-inline: var(--space-2);
   font-size: var(--text-sm);
 }
 
-.legal a {
-  display: inline-flex;
-  align-items: center;
+.prefs .lang-icon {
+  flex: none;
+  color: var(--muted);
+}
+
+.prefs .lang [aria-current] {
+  font-weight: 600;
+}
+
+.prefs .lang .lang-toggle {
   min-height: 2.75rem;
+  padding: var(--space-2);
+  border-color: transparent;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
 }
 
-/* Long text (the legal pages): a reading measure instead of the narrow card. */
-.card.prose {
-  width: min(100%, 75ch);
+.prefs .lang .lang-toggle:hover {
+  background: var(--hover);
 }
 
-.theme-toggle[aria-pressed="true"] {
+.prefs .theme-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 2.75rem;
+  padding: 0;
+}
+
+.theme-toggle[aria-pressed="true"],
+.theme-toggle[aria-pressed="true"]:hover {
   background: var(--fg);
   color: var(--bg);
+}
+
+/* ---- page ---- */
+
+.page {
+  max-width: 72rem;
+  margin-inline: auto;
+  padding: 0 var(--gutter) var(--space-12);
+}
+
+.hero {
+  padding-block: var(--space-8) var(--space-8);
+}
+
+.motif {
+  margin-bottom: var(--space-4);
+  color: var(--muted);
+  font: 500 var(--text-sm) var(--font-mono);
+  overflow-wrap: anywhere;
+}
+
+.motif span {
+  color: var(--fg);
+}
+
+.hero h1 {
+  max-width: 21ch;
+  font-size: var(--text-2xl);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+}
+
+.lede {
+  max-width: 56ch;
+  margin-top: var(--space-4);
+  font-size: var(--text-md);
+}
+
+.proof {
+  max-width: 56ch;
+  margin-top: var(--space-3);
+  color: var(--muted);
+}
+
+/* ---- the tool ---- */
+
+.tool {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.pane {
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.pane[data-over] {
+  border-color: var(--accent);
+  border-style: dashed;
+}
+
+.pane-label {
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+.key-input {
+  width: 100%;
+  min-height: 9rem;
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--fg);
+  font: 400 var(--text-xs) / 1.45 var(--font-mono);
+  resize: vertical;
+  overflow-wrap: anywhere;
+}
+
+.key-input[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+.key-input::placeholder {
+  color: var(--muted);
+}
+
+.file-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  font-size: var(--text-sm);
+}
+
+.push {
+  margin-inline-start: auto;
+}
+
+.status {
+  min-height: 3rem;
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+
+.status[data-state="ok"] {
+  color: var(--ok);
+}
+
+.status[data-state="error"] {
+  color: var(--danger);
+}
+
+.status-extra {
+  display: block;
+  color: var(--muted);
+}
+
+/* The sign between the panes answers the question the headline asks. */
+.seam {
+  display: grid;
+  place-items: center;
+  height: 2rem;
+  color: var(--muted);
+  font: 500 var(--text-xl) var(--font-mono);
+}
+
+.seam span {
+  animation: sign-in 120ms ease-out;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  align-items: center;
+  margin-top: var(--space-2);
+}
+
+.shortcut {
+  display: inline-flex;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+}
+
+/* The key caps sit on the accent: outline only, in the label colour, so contrast stays that of the label. */
+.btn-primary kbd {
+  border-color: color-mix(in srgb, var(--accent-fg) 55%, transparent);
+  background: transparent;
+  color: inherit;
+}
+
+/* No keyboard shortcut to advertise on a touch screen. */
+@media (hover: none) {
+  .shortcut {
+    display: none;
+  }
+}
+
+.sample-note {
+  font-size: var(--text-sm);
+}
+
+@media (min-width: 64rem) {
+  .tool {
+    grid-template-columns: 1fr 3.5rem 1fr;
+    gap: 0;
+  }
+
+  .seam {
+    height: auto;
+    align-self: center;
+  }
+
+  .actions,
+  .sample-note {
+    grid-column: 1 / -1;
+  }
+
+  .actions {
+    margin-top: var(--space-6);
+  }
+
+  .key-input {
+    min-height: 13rem;
+  }
+}
+
+/* ---- buttons ---- */
+
+.btn,
+.link {
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--fg);
+  font: 500 var(--text-sm) var(--font-sans);
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: var(--hover);
+}
+
+.btn:active {
+  background: var(--rule);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-size: var(--text-base);
+  padding-inline: var(--space-6);
+}
+
+.btn-primary:hover {
+  background: color-mix(in srgb, var(--accent) 88%, var(--fg));
+}
+
+.btn-quiet {
+  border-color: transparent;
+  padding-inline: var(--space-3);
+}
+
+.link {
+  border-color: transparent;
+  padding-inline: var(--space-2);
+  color: var(--fg);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/* ---- result ---- */
+
+.result-wrap {
+  margin-top: var(--space-6);
+}
+
+.result {
+  padding: var(--space-6);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  animation: rise 160ms ease-out;
+}
+
+.result-kicker {
+  margin-bottom: var(--space-2);
+  color: var(--muted);
+  font-size: var(--text-xs);
+  font-weight: 500;
+}
+
+.result-title {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  font-size: var(--text-xl);
+  line-height: 1.2;
+}
+
+.sign {
+  font-family: var(--font-mono);
+}
+
+.result-body {
+  max-width: var(--measure);
+  margin-top: var(--space-3);
+}
+
+.result-title + .result-body {
+  margin-top: var(--space-2);
+}
+
+.result[data-status="match"] .result-title {
+  color: var(--ok);
+}
+
+.result[data-status="mismatch"] .result-title,
+.result[data-status="typeMismatch"] .result-title,
+.result[data-status="failed"] .result-title,
+.result[data-status="blocked"] .result-body {
+  color: var(--danger);
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: var(--space-2) var(--space-6);
+  margin: var(--space-6) 0 var(--space-3);
+}
+
+.facts dt {
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+.facts dd {
+  margin: 0;
+  min-width: 0;
+}
+
+.fp {
+  display: block;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.fp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+@media (max-width: 36rem) {
+  .facts {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-1);
+  }
+
+  .facts dd {
+    margin-bottom: var(--space-3);
+  }
+}
+
+.tip {
+  max-width: var(--measure);
+  margin-top: var(--space-4);
+  font-size: var(--text-sm);
+}
+
+/* ---- FAQ ---- */
+
+.faq {
+  margin-top: var(--space-16);
+}
+
+.faq h2 {
+  margin-bottom: var(--space-4);
+  font-size: var(--text-xl);
+}
+
+.faq details {
+  border-top: 1px solid var(--rule);
+}
+
+.faq details:last-child {
+  border-bottom: 1px solid var(--rule);
+}
+
+.faq summary {
+  display: flex;
+  align-items: center;
+  min-height: 3.25rem;
+  padding-block: var(--space-2);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.faq details p {
+  max-width: var(--measure);
+  padding-bottom: var(--space-4);
+}
+
+/* ---- footer ---- */
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-6);
+  margin-top: var(--space-12);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--rule);
+  font-size: var(--text-sm);
+}
+
+.foot-note {
+  max-width: 52ch;
+}
+
+.foot-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* ---- terms and privacy: a bottom sheet on phones, a side sheet from 768px ---- */
+
+dialog.sheet {
+  position: fixed;
+  inset: auto 0 0 0;
+  width: 100%;
+  max-width: none;
+  max-height: 88dvh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: var(--surface);
+  color: var(--fg);
+  box-shadow: var(--shadow-sheet);
+  overflow: hidden;
+}
+
+dialog.sheet::backdrop {
+  background: var(--scrim);
+}
+
+.sheet-head {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--gutter);
+  border-bottom: 1px solid var(--rule);
+  background: var(--surface);
+}
+
+.sheet-head h2 {
+  font-size: var(--text-xl);
+}
+
+.sheet-meta {
+  color: var(--muted);
+  font-size: var(--text-xs);
+}
+
+.sheet-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: var(--space-2) var(--gutter) var(--space-8);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.sheet-scroll section {
+  margin-top: var(--space-6);
+}
+
+.sheet-scroll h3 {
+  margin-bottom: var(--space-2);
+  font-size: var(--text-base);
+}
+
+.sheet-scroll section p {
+  max-width: var(--measure);
+}
+
+.sheet-scroll section p + p {
+  margin-top: var(--space-2);
+}
+
+.draft {
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: var(--text-sm);
+}
+
+dialog.sheet[open] {
+  display: flex;
+  flex-direction: column;
+  translate: 0 0;
+  transition: translate 180ms ease-out;
+}
+
+@starting-style {
+  dialog.sheet[open] {
+    translate: 0 100%;
+  }
+}
+
+@media (min-width: 48rem) {
+  dialog.sheet {
+    inset: 0 0 0 auto;
+    width: min(34rem, 100%);
+    height: 100dvh;
+    max-height: none;
+    border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+  }
+
+  @starting-style {
+    dialog.sheet[open] {
+      translate: 100% 0;
+    }
+  }
+}
+
+/* ---- not found ---- */
+
+.missing {
+  padding-top: var(--space-12);
+}
+
+.missing .back {
+  margin-top: var(--space-4);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@keyframes sign-in {
+  from {
+    opacity: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

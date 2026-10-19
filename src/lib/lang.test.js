@@ -1,7 +1,7 @@
 import { expect, test } from "vitest";
 import { en } from "../i18n/en.js";
 import { id } from "../i18n/id.js";
-import { langFrom, langFromCookieHeader, loginError } from "./lang.js";
+import { langFrom, langFromCookieHeader } from "./lang.js";
 
 test("only id and en pass, since the value ends up in HTML", () => {
   expect(langFrom("id")).toBe("id");
@@ -43,12 +43,4 @@ test("both dictionaries have the same keys and no empty string", () => {
   for (const s of [...strings(en), ...strings(id)]) {
     if (typeof s === "string") expect(s.trim()).not.toBe("");
   }
-});
-
-test("a failed sign-in becomes a message key", () => {
-  expect(loginError(401)).toBe("invalidCredentials");
-  expect(loginError(429)).toBe("tooManyAttempts");
-  expect(loginError(400)).toBe("failed");
-  expect(loginError(502)).toBe("failed");
-  expect(loginError(undefined)).toBe("offline");
 });
