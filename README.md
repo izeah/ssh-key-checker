@@ -1,0 +1,121 @@
+# Ssh Key Checker
+
+> Generated on 2026-10-19 with [Vibe Coding Boilerplate Generator](https://github.com/izeah01/vibe-gen)
+
+## Stack
+
+- **Language**: javascript
+- **Framework**: React/Vite (Frontend SPA)
+
+## Prerequisites
+
+- Go 1.21+ (or Node.js 20+ for JS projects)
+- Docker (for local database/Redis)
+- Make
+- Claude Code plugins, installed once per machine at **user scope** (see below)
+- Semgrep CLI for `make sast`: `brew install semgrep` (or `pipx install semgrep`); no account needed
+
+### Claude Code Plugins (required)
+
+Install these plugins once on your machine, at user scope. `.claude/settings.json` does not list them on purpose, so
+opening the project never adds a second, project-scope copy:
+
+```bash
+claude plugin marketplace add anthropics/claude-plugins-official
+claude plugin marketplace add DietrichGebert/ponytail
+claude plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill
+claude plugin marketplace add https://github.com/miqdadbadjuber/anti-slop
+
+claude plugin install ponytail@ponytail
+claude plugin install security-guidance@claude-plugins-official
+claude plugin install typescript-lsp@claude-plugins-official
+claude plugin install frontend-design@claude-plugins-official
+claude plugin install ui-ux-pro-max@ui-ux-pro-max-skill
+claude plugin install antislop@anti-slop
+```
+
+Keep the default user scope; installing the same plugin again at project scope only duplicates it. Without them the
+vibe workflow loses steps (`/ponytail-review`, security hooks, design guidance) and the agent drifts toward
+over-engineered code, so the agent checks `claude plugin list` before the first task and stops if one is missing. It also
+stops when `semgrep` is missing: the SAST step of the workflow needs it.
+
+antislop asks "during or after?" at the start of every session. `CLAUDE.md` answers `during` for this project; to make
+that the answer everywhere without the question, save it once (Linux/macOS; on Windows the file is
+`%APPDATA%\antislop\settings.json`):
+
+```bash
+mkdir -p ~/.config/antislop && { [ -e ~/.config/antislop/settings.json ] || printf '{"mode":"during"}\n' > ~/.config/antislop/settings.json; }
+```
+
+### Context7 MCP (recommended)
+
+Gives the agent current library docs instead of its training-time memory. Install once at user scope:
+
+```bash
+claude mcp add --scope user --transport http context7 https://mcp.context7.com/mcp
+```
+
+Check it with `/mcp` inside Claude Code. The agent works without it but tells you once that it is missing.
+
+## Local Setup
+
+```bash
+cp .env.example .env
+# Edit .env with your local values
+
+go mod tidy          # or: npm install
+make swag            # generate Swagger docs into docs/swagger (for Go API projects)
+make run             # or: npm run dev
+```
+
+## Design Direction
+
+Fill in the Intent section of `DESIGN.md` before the first screen (audience, the one decision on the main screen,
+the page inventory with each route's kind, default language and register, brand assets, two or three references). The agent proposes the Style section from your answers
+and waits for your `deal`. Until `Status` is `APPROVED` it asks instead of building, because a UI made without
+direction is generic by construction.
+
+```bash
+make sast        # includes the slop lint in .semgrep/antislop.yml
+make ui-shots    # screenshots at 375, 768 and 1280 px, light and dark, Indonesian and English, into ui-shots/
+```
+
+## Swagger / OpenAPI Documentation
+
+For Go API projects (Echo, Gin, Fiber), Swagger docs are generated into `docs/swagger`:
+
+```bash
+# Using Makefile
+make swag
+
+# Or using swag CLI directly:
+swag init -g main.go -o ./docs/swagger
+```
+
+Access Swagger UI in your browser:
+- `http://localhost:8080/swagger/index.html` (or your configured `APP_PORT`)
+
+## Environment Variables
+
+See `.env.example` for all required variables. Never commit real credentials to Git.
+
+## Documentation
+
+| Topic | Path |
+|---|---|
+| Architecture | `docs/architecture.md` |
+| API | `docs/api.md` |
+| Database | `docs/database.md` |
+| Security | `docs/security.md` |
+| Testing | `docs/testing.md` |
+| Progress | `docs/progress.md` |
+
+## AI Agent Workflow
+
+Read `CLAUDE.md` and `docs/vibe-workflow.md` before starting any task.
+
+## Security Notes
+
+- All secrets are environment-variable driven.
+- `.env` is git-ignored. Only `.env.example` (with placeholders) is committed.
+- See `docs/security.md` for full security guidelines.

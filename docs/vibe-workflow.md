@@ -1,0 +1,158 @@
+# Vibe Coding Workflow — Ssh Key Checker
+
+## The Workflow
+
+```
+Triage the prompt (LIGHT vs HEAVY — CLAUDE.md Rule 0)
+  ├─ LIGHT ─────────────────────────────────────────────┐
+  └─ HEAVY → Clarify / PRD breakdown                     │
+             → Plan in docs/task.md (AWAITING REVIEW)    │
+             → STOP → developer revises → "deal"         │
+  ↓ ←──────────────────────────────────────────────────┘
+Impact Analysis → Inspect Relevant Files Only → Implement
+  ↓
+Verify: build + lint + targeted tests
+  ↓
+/ponytail-review → apply cuts → RECHECK (build + tests again)
+  ↓
+/security-review (security-sensitive changes) + security-guidance hooks
+  ↓
+Review git diff → Update docs/progress.md → Commit
+```
+
+## Step-by-Step
+
+### 0. Triage
+
+Every prompt is classified first. **HEAVY** if any of: vague requirements, schema change, new/changed API contract, auth/session/payment/PII/upload/security-sensitive code (any size), new dependency, more than 2 files or more than one layer, irreversible operation. Otherwise **LIGHT**. In doubt → HEAVY.
+
+- **LIGHT**: one-line triage statement, implement, verify (steps 2–9).
+- **HEAVY**: plan first (step 1). No code, no file creation, no mutating command before the developer types **`deal`**.
+
+### 1. Plan (HEAVY only) — `docs/task.md`
+
+#### Scenario A: Developer provides a PRD
+1. Analyze it thoroughly: business objective, scope, domain entities, user journeys, edge cases, technical constraints.
+2. Decompose into feature specs: API contracts, database schema, models, services, integrations.
+
+#### Scenario B: Developer provides a brief / underspecified prompt
+(e.g. *"buatkan fitur payment"*, *"tambahkan auth"*)
+1. Do NOT guess business rules or write speculative code.
+2. Ask targeted questions, recorded under "Clarifying Questions" in `docs/task.md`:
+   - **Scope & Flow**: core user flows, required endpoints/screens.
+   - **Data & Schema**: fields, relationships, PostgreSQL 18 UUIDv7 vs MySQL BINARY(16).
+   - **Business Rules**: validation, roles, permissions, error conditions.
+   - **Security & Privacy**: which data is PII, who may read/write it, retention.
+   - **Integrations**: third-party gateways, notifications, background jobs.
+3. STOP until answered.
+
+#### Then, for both scenarios
+1. Fill every section of `docs/task.md`: Scope Size (`S` 1-2 files | `M` 3-6 | `L` 7-15 | `XL` 16+), Files to Create, Files to Modify, DB Schema Changes, API Contracts, Business Rules & Validations, Dependencies, Testing Plan, Security Considerations.
+2. Set Status to `AWAITING REVIEW` and STOP:
+   > *"Plan ready in `docs/task.md`. Please review, point out anything off, and type `deal` to proceed."*
+3. Revise on feedback, STOP again. Only `deal` unlocks execution.
+4. On `deal`, execute phase-by-phase and tick the Execution Checklist. If the work drifts from the plan (new file, dependency, or schema change), STOP and get approval for the delta.
+5. On completion, archive the summary to `docs/progress.md` and reset `docs/task.md`.
+
+---
+
+### 2. Impact Analysis
+Identify **exactly** which files will be affected. Do not scan the entire repository.
+
+### 3. Inspect Relevant Files Only
+Read only the files identified in step 2. Use `docs/architecture.md` as the map — do not rediscover architecture on every task.
+
+### 4. Plan Minimal Change
+Determine the smallest correct change needed. If the scope is large, break it into incremental steps.
+
+### 5. Implement
+Follow existing patterns. Do not introduce new patterns without a clear reason.
+- **Database Schema Changes**: If the task introduces a database design, new entity, or schema change:
+  1. Check `migrations/` first to see if a migration file already exists.
+  2. Create migration files using `make migrate-create NAME=<name>`:
+     - Generates timestamped `.up.sql` and `.down.sql` files directly in `migrations/`.
+     - PostgreSQL 18: `id UUID PRIMARY KEY DEFAULT uuidv7()` (native, sortable).
+     - MySQL: `id BINARY(16) PRIMARY KEY` (compact 16 bytes, sortable).
+  3. Apply schema migration to the local database using `make migrate-up` so migration history and state are strictly tracked in `schema_migrations`.
+  4. Create/update application models in Go 1.27 matching the schema: `ID uuid.UUID` with `BeforeCreate` hook using `uuid.NewV7()`.
+  5. Update `docs/database.md`.
+  6. **PROHIBITION**: Never execute raw SQL DDL directly against the database, and never rely on ORM `AutoMigrate` without running `make migrate-up`.
+- **Third-Party API Integrations (Midtrans, Finpay, etc.)**:
+  1. Place clients under `pkg/<thirdparty-name>` or `pkg/thirdparty-sample`.
+  2. Update `config.example.yml` and `.env.example` with **dummy credentials** (e.g. `MIDTRANS_SERVER_KEY=SB-Mid-server-dummy-key`). Never hardcode real keys; let the developer supply real secrets. Never read `.env` / `config.yml` (blocked in `.claude/settings.json`).
+
+### 6. Targeted Test
+Run the smallest relevant set of tests first.
+- **Mock Third-Party APIs**: NEVER call real external APIs during unit tests. Always use mock servers (`httptest.Server`) or interface mocks.
+- **Local DB Isolation**: Only run database queries and tests against the **local Docker container** (`make pg-start`). NEVER point to dev or prod databases (risky — developer performs remote operations manually).
+
+```bash
+# Go
+go test ./internal/service/user/...
+
+# JavaScript
+npm test -- --testPathPattern=user
+```
+
+### 6b. Ponytail Review & Recheck
+1. Run `/ponytail-review` on the diff.
+2. Apply cuts unless they break CLAUDE.md Rule 1.1 (security/privacy first; the 12 mandated repository methods, the role/permission repository methods and the file-per-function layout are exempt).
+3. **Recheck**: build + lint + targeted tests again.
+
+### 6c. SAST (every task)
+Run `make sast` (Semgrep, public `p/default` rules, no account). Fix every finding; mark a proven false positive with `nosemgrep: <rule-id> -- <reason>` on the line above it. It also runs the slop lint in `.semgrep/antislop.yml`; a technique `DESIGN.md` explicitly asks for is kept with the same marker and its reason.
+
+### 6d. Security Review
+For changes touching input handling, DB queries, auth/cookies, uploads, outbound calls, logging, or FE rendering of user data: run `/security-review` and resolve every finding. Never bypass `security-guidance` hook warnings.
+
+### 6e. UI Evidence and antislop Delivery Gate (frontend, when the task changes what the user sees)
+1. `DESIGN.md` Status must be `APPROVED` before UI work starts (CLAUDE.md Rule 10), and every touched route is in its
+   Page inventory as **app** or **public**.
+2. `make ui-shots`, then open the PNGs in `ui-shots/` (375, 768 and 1280 px; light and dark; Indonesian and English)
+   and look at them.
+3. Run the app, click every control, switch the language with a form half filled in, check the console.
+4. Report the antislop Delivery Gate and the checklist of each page's kind (`docs/design_system.md` → Page kinds):
+   PASS or FAIL per item, every PASS with evidence. A FAIL means the task is not done.
+
+### 7. Review Diff
+```bash
+git diff
+```
+Ensure changes are scoped to what was intended. Do not commit unrelated changes. If `git status` fails because the project is not a repository, run `git init` first.
+
+### 8. Update Progress
+Update `docs/progress.md` before a context transition or at the end of a work session.
+
+### 9. Commit
+Commit at logical task boundaries with meaningful messages.
+
+```bash
+git add -p   # review each hunk before staging
+git commit -m "feat(user): add pagination to user list endpoint"
+```
+
+## When Context Gets Large
+
+1. Stop unnecessary exploration.
+2. Update `docs/progress.md`.
+3. Commit at a logical boundary.
+4. Start a fresh context.
+
+When resuming:
+```bash
+cat docs/progress.md
+git status
+git log --oneline -10
+```
+
+## Milestones / Before Release
+- `/ponytail-audit` — whole-repo over-engineering audit.
+- `/ponytail-debt` — list deferred `ponytail:` shortcuts and decide which to pay down.
+- Dependency scan: `make vuln` (Go) or `npm audit --omit=dev` (JS).
+
+## Principles
+
+- Optimize for small, reversible, understandable changes.
+- Never use a task as an excuse for a broad refactor.
+- Prefer existing patterns over new abstractions.
+- Report honestly — never claim "Done" without verification.

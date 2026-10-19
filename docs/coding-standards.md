@@ -1,0 +1,107 @@
+# Coding Standards — Ssh Key Checker
+
+## General
+
+- Follow idiomatic conventions of the language/framework.
+- Follow existing project patterns — do not introduce new patterns without discussion.
+- Keep functions focused on one responsibility.
+- Prefer simple, readable code over clever code.
+- Avoid premature abstraction.
+- Meaningful names: avoid abbreviations unless idiomatic (`ctx`, `err`, `db`).
+- Avoid duplicated logic — but only abstract when the abstraction is clearly justified.
+- Do not refactor unrelated code during a feature task.
+- Avoid unnecessary dependencies.
+
+## Go Specific
+
+- Use `gofmt` / `goimports` before committing.
+- Explicit error handling — never ignore errors silently.
+- Small, focused interfaces.
+- Prefer composition over inheritance.
+- Use `context.Context` for request-scoped values and cancellation.
+- Avoid goroutine leaks — always ensure goroutines can exit.
+- Avoid data races — use channels or sync primitives where needed.
+- Do not create interfaces solely for mocking without a design reason.
+- Group imports: stdlib → external → internal.
+- Constructor functions are named `New...`.
+
+## Handler & Pagination Standards
+
+For every handler accepting an `<entity>Filter` embedding `*abstraction.Pagination`, bind the filter and pagination in two explicit stages:
+
+```go
+func (h *Handler) Find(c echo.Context) (err error) {
+	var (
+		ctx  = c.(*abstraction.Context)
+		data []*dto.<Entity>Response
+		info *abstraction.PaginationInfo
+	)
+
+	f := new(dto.<Entity>Filter)
+	if err = c.Bind(f); err != nil {
+		return response.ErrorBadRequest(err).Send(c)
+	}
+
+	f.Pagination = new(abstraction.Pagination)
+	if err = c.Bind(f.Pagination); err != nil {
+		return response.ErrorBadRequest(err).Send(c)
+	}
+
+	if data, info, err = h.<Entity>Service.Find(ctx, f); err != nil {
+		return response.ErrorResponse(err).Send(c)
+	}
+	return response.SuccessListResponse(data, info).Send(c)
+}
+```
+
+- Query parameter names: `page` (page number) and `page_size` (items per page).
+- Output metadata envelope: `meta.info` containing `page`, `page_size`, `count`, `pages`, and `more_records`.
+
+## JavaScript / TypeScript Specific
+
+- Use ESM (`import`/`export`) with `.js` extension in local imports.
+- `async`/`await` over raw Promises for readability.
+- `const` by default; `let` only when value changes.
+- `camelCase` for variables and functions.
+- `PascalCase` for classes and types.
+- `UPPER_SNAKE_CASE` for constants.
+- Use TypeScript types/interfaces for all data shapes.
+- Avoid `any` — be explicit.
+- 4 spaces indentation, double quotes for strings.
+- Trailing commas on multiline structures.
+
+## Frontend UI/UX & Component Standards
+
+Direction and visual rules live in `DESIGN.md` and `docs/design_system.md`; these are the code conventions.
+
+- **Atomic Design Naming**: components are `PascalCase` and live in their atomic folder.
+  - Atoms: `Button`, `Badge`, `ThemeToggle`, `LangToggle`
+  - Molecules: `UserCard`, `SearchInput`
+  - Organisms: `DashboardSidebar`, `UserDataTable`
+  - Templates end in `Layout`, screens in `Page` (or the framework's route files).
+- **Native first**: semantic HTML and native elements (`<dialog>`, `<details>`, `<input type="date">`) before
+  libraries, CSS before a motion library. A UI library, icon set or motion library needs a reason in the plan and an ADR.
+- **Styling**: tokens only (`var(--token)` from `src/styles/globals.css`). No literal colors or sizes in components, no
+  inline `style`, no `transition: all`.
+- **State**: server data through the framework's data layer (TanStack Query / Vue Query, or load functions /
+  `useFetch`), never copied into local state. UI state stays local. Add a global store only when a real screen needs one.
+- **Forms**: native `<form>` and `FormData`, validated by the BFF or API with zod. Add a form library only when a real
+  screen needs one.
+- **Import order**: framework, third-party, components (atoms → molecules → organisms), hooks and stores,
+  services and API, types, utilities, styles.
+
+## File Organization
+
+- Group related files by domain, not by type.
+- Test files colocated with source: `file_test.go` or `file.test.ts`.
+- One concept per file where practical.
+
+## Comments
+
+- Comment exported symbols with Go doc format: `// FuncName does X`.
+- Comment complex business logic — not obvious implementation.
+- Do not comment out code — delete it and rely on Git history.
+
+## Commit Style
+
+See `docs/git.md`.
