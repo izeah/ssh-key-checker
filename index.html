@@ -3,9 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- An app, not a public site: no page is indexed. Public pages that must rank belong in Next, Nuxt or SvelteKit. -->
-    <meta name="robots" content="noindex" />
-    <!-- No <title> here: every page renders its own in the chosen language, and React puts it in <head>. -->
+    <!-- No <title> here: every page renders its own in the chosen language, and React puts it in <head>.
+         The tags below are what crawlers and link previews read without running JavaScript, so they are
+         in the default language (id). The not-found screen adds its own noindex, and the stricter wins. -->
+    <meta name="robots" content="index, follow" />
+    <meta
+      name="description"
+      content="Cek apakah private key dan public key SSH kamu sepasang. Semua pengecekan berjalan di browser, kunci tidak dikirim ke mana pun."
+    />
+    <!-- nosemgrep: html.security.audit.missing-integrity.missing-integrity -- a canonical link is metadata, the browser loads nothing from it -->
+    <link rel="canonical" href="https://ssh-key-checker.izeah.my.id/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="SSH Key Checker" />
+    <meta property="og:url" content="https://ssh-key-checker.izeah.my.id/" />
+    <meta property="og:title" content="Cek pasangan SSH key · SSH Key Checker" />
+    <meta
+      property="og:description"
+      content="Cek apakah private key dan public key SSH kamu sepasang. Semua pengecekan berjalan di browser, kunci tidak dikirim ke mana pun."
+    />
+    <meta property="og:locale" content="id_ID" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <meta name="twitter:card" content="summary" />
+    <!-- No logo exists yet, so no favicon: an empty one stops the browser asking for /favicon.ico. -->
+    <link rel="icon" href="data:," />
     <script src="/theme.js"></script>
   </head>
   <body>

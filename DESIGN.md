@@ -15,7 +15,7 @@ the output is generic by construction.
 
 > Written by the agent on 2026-10-19 from the developer's prompt and approved with `deal`. Lines marked **(prompt)**
 > come from the developer; lines marked **(proposal)** were the agent's suggestion and are approved. Deviations from
-> the draft: added `--rule` (decorative separators) and `--hover` tokens; legal text is sample text marked `[REAL DATA]`.
+> the draft: added `--rule` (decorative separators) and `--hover` tokens; the legal text names the real host (`ssh-key-checker.izeah.my.id`) and the owner.
 
 ## Intent (you answer)
 
@@ -47,8 +47,8 @@ indexed, needs SEO).
 
 | Route | Kind | The one action on it | Indexed |
 |---|---|---|---|
-| `/` | app (a tool; the SPA has no public page) | check that a private key and a public key are a pair | no |
-| not found (any other path) | app | go back to the checker | no |
+| `/` | public (a single-page tool that should be found) | check that a private key and a public key are a pair | yes |
+| not found (any other path) | app | go back to the checker | no (`noindex`) |
 | Terms of use, Privacy | dialogs on `/`, not routes **(prompt)** | read the text, close | no |
 
 The scaffold routes `/login`, `/dashboard`, `/privacy` and `/terms` are removed: this product has no account and no

@@ -17,7 +17,8 @@ Browser: CheckerPage ──▶ src/lib/ssh-key.js ──▶ WebCrypto (crypto.su
   `form-action 'none'`, `require-trusted-types-for 'script'`. Production needs HTTPS (WebCrypto is secure-context only).
 - `public/theme.js` applies the saved theme before first paint (blocking file, no inline script). Indonesian and English:
   `src/i18n/{id,en}`, `src/lib/lang*`; a switch re-renders in place.
-- `index.html` says `noindex`: a SPA tool, not a page that must rank. Routes: `/` and the not-found screen.
+- Deployed on Vercel (`vercel.json`: headers, SPA fallback, cache). `index.html`, `public/robots.txt` and `public/sitemap.xml`
+  make `/` indexable at `https://ssh-key-checker.izeah.my.id`; the not-found screen says `noindex` (ADR 005). Routes: `/` and not-found.
 
 ## Testing
 

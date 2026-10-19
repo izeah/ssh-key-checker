@@ -50,9 +50,25 @@ sheet dialogs), built with native elements and no UI library.
 
 **Reason**: See `DESIGN.md` (each choice has its one-line reason). Fonts are the only new dependencies.
 
-**Consequences**: The legal dialogs hold dummy but complete text (structure after ISO/IEC 29100 principles, no compliance
-claim, dummy data disclosed in a note). The developer asked for it on 2026-10-19 instead of `[REAL DATA]` markers; replace
-the provider, address, contacts and jurisdiction with official data before a release.
+**Consequences**: The legal dialogs name the real host and the owner (see ADR 005).
+
+## Decision 005 — Public deployment on Vercel (2026-10-19)
+
+**Decision**: The tool is deployed on Vercel at `https://ssh-key-checker.izeah.my.id`. `vercel.json` sets the security headers
+(the same CSP as the build plus `frame-ancestors 'none'`), a SPA fallback and cache rules. `public/robots.txt` allows
+crawling and names `public/sitemap.xml`. `index.html` carries `index, follow`, a canonical link, a description and Open Graph
+tags in Indonesian (the default language), because crawlers and link previews do not run JavaScript. The not-found screen adds
+`noindex`; with two robots tags the stricter wins.
+
+**Context**: This reverses the scaffold's default (a SPA is `noindex`), on the developer's request to publish the tool.
+
+**Reason**: A single-page tool with a stable URL is worth indexing. Language lives in a cookie, not the URL, so there are no
+`hreflang` alternates and previews are Indonesian only; a per-language URL needs a framework with server rendering.
+
+**Consequences**: The host is written in `index.html`, `public/robots.txt`, `public/sitemap.xml` and the legal text; change all
+four if the domain changes (`src/lib/csp.test.js` guards the three that matter). Unknown paths return the app with status 200
+(Vercel rewrite) and say `noindex`. The CSP exists in `vite.shared.js`, `nginx.conf` and `vercel.json`; the test keeps them equal.
+The legal text names the owner and `hello@izeah.my.id`: that mailbox must exist.
 
 ## Decision Template
 

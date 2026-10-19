@@ -1,5 +1,4 @@
-# This single-page app has no indexable page: index.html says noindex on every route. Crawlers may
-# fetch them (a Disallow would hide that noindex). Public pages that must rank belong in Next, Nuxt
-# or SvelteKit (docs/design_system.md, Page kinds).
 User-agent: *
-Disallow:
+Allow: /
+
+Sitemap: https://ssh-key-checker.izeah.my.id/sitemap.xml

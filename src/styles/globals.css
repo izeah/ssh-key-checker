@@ -719,14 +719,6 @@ dialog.sheet::backdrop {
   margin-top: var(--space-2);
 }
 
-.draft {
-  margin-top: var(--space-4);
-  padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  font-size: var(--text-sm);
-}
-
 dialog.sheet[open] {
   display: flex;
   flex-direction: column;

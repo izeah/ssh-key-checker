@@ -48,9 +48,6 @@ export function LegalDialog({ kind, t, onClose }) {
             ))}
           </section>
         ))}
-        <p className="draft">
-          <Rich text={t.legal.note} />
-        </p>
       </div>
     </dialog>
   );

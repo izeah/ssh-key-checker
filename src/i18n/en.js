@@ -169,14 +169,13 @@ export const en = {
   legal: {
     close: "Close",
     version: "Version 1.0 · Effective 19 October 2026",
-    note: "This document is structured after the ISO/IEC 29100 privacy principles and is not a certification claim. The provider name, address, contact, and jurisdiction above are sample (dummy) data: replace them with official data before release.",
     terms: {
       title: "Terms of use",
       sections: [
         {
           h: "1. Acceptance",
           p: [
-            "By using this page you agree to the terms below. If you don't agree, stop using it.",
+            'By opening or using `ssh-key-checker.izeah.my.id` (the "service"), you agree to the terms below. If you don\'t agree, stop using it.',
           ],
         },
         {
@@ -195,7 +194,7 @@ export const en = {
         {
           h: "4. Prohibited use",
           p: [
-            "Don't use this page to check keys that belong to someone else without their permission, and don't try to disrupt or damage the service.",
+            "Don't use this service to check keys that belong to someone else without their permission, and don't try to disrupt or damage it.",
           ],
         },
         {
@@ -207,19 +206,20 @@ export const en = {
         {
           h: "6. Limitation of liability",
           p: [
-            "To the extent the law allows, the provider is not liable for losses arising from using, or being unable to use, this page, except for gross negligence or intentional misconduct by the provider.",
+            "To the extent the law allows, the provider is not liable for losses arising from using, or being unable to use, this service, except for gross negligence or intentional misconduct by the provider.",
           ],
         },
         {
           h: "7. Changes to the terms",
           p: [
-            "These terms may change. Material changes get a new effective date at the top of this document.",
+            "These terms may change. Material changes get a new effective date at the top of this document, and using the service afterwards means you accept them.",
           ],
         },
         {
           h: "8. Governing law and contact",
           p: [
-            "These terms are governed by the laws of the Republic of Indonesia. Disputes are first settled by discussion and, failing that, by the South Jakarta District Court. Provider: SSH Key Checker Team, Jl. Contoh Raya No. 1, South Jakarta 12000, Indonesia. Contact: `legal@example.com`.",
+            "These terms are governed by the laws of the Republic of Indonesia. Disputes are first settled by discussion and, failing that, by the competent district court in Indonesia.",
+            "Provider: Faiz Mohammad Hafidza, Indonesia. Contact: `hello@izeah.my.id`.",
           ],
         },
       ],
@@ -260,7 +260,7 @@ export const en = {
         {
           h: "6. Third parties",
           p: [
-            "This page loads no scripts, fonts, or services from third parties. The hosting provider may record standard access data such as IP address and visit time in its server logs, usually kept for at most 30 days for security and troubleshooting.",
+            "This page loads no scripts, fonts, or services from third parties, and we run no analytics or trackers. The service is delivered through Vercel, which may record standard access data such as IP address and visit time in its server logs, under Vercel's own privacy policy.",
           ],
         },
         {
@@ -272,7 +272,7 @@ export const en = {
         {
           h: "8. Your rights and contact",
           p: [
-            "Because we keep no personal data about you, there is nothing on our side to access or delete. Contact for privacy questions: `privacy@example.com`. We reply within 14 working days.",
+            "Because we keep no personal data about you, there is nothing on our side to access or delete. Privacy questions can be sent to `hello@izeah.my.id`.",
           ],
         },
         {

@@ -20,7 +20,7 @@ dialog open and Escape with focus back, 375 px (no overflow, tap targets 44 px),
 See `docs/decisions.md` 002 to 004.
 
 ## Known Issues
-- Legal dialogs hold dummy data (provider, address, contacts at `example.com`, South Jakarta jurisdiction), disclosed in a note at the bottom of each sheet. Replace with official data before release; `grep -rn "data contoh\|sample (dummy)" src/i18n` finds the note.
+- Legal text names the owner (Faiz Mohammad Hafidza) and `hello@izeah.my.id`: create that mailbox, or change it in `src/i18n/{id,en}.js`. It has no street address or court by design (not known).
 - File picking and drag and drop are covered by Playwright, not by hand in the browser pane (it cannot open a file chooser).
 - The `≟` glyph falls back to a system font (IBM Plex Mono latin subset lacks it).
 
@@ -29,6 +29,10 @@ Inline code chips for paths, shortcuts and commands; Cmd/Ctrl + Enter runs the c
 literal `\n` in a pasted key becomes real line breaks (`normalizePaste`, also quotes around it); language switch is an inline
 link with a globe icon; legal sheets have a fixed title and Close button and complete dummy data instead of `[REAL DATA]`.
 
+## Revision 3 (2026-10-19)
+Legal text now uses the real host and owner, no placeholders. Added `vercel.json`, `public/robots.txt`, `public/sitemap.xml`,
+SEO tags in `index.html` and a CSP sync test. See ADR 005.
+
 ## Next Steps
-1. Replace the `[REAL DATA]` legal text with the official text, and the hosting-log and contact lines.
-2. Decide on hosting (HTTPS needed for WebCrypto) and push the branch.
+1. Vercel: import the repo (Vite is detected; `vercel.json` sets the rest) and add the domain `ssh-key-checker.izeah.my.id`.
+2. Create the mailbox `hello@izeah.my.id`, then submit `https://ssh-key-checker.izeah.my.id/sitemap.xml` in Google Search Console.
