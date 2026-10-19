@@ -45,8 +45,9 @@
   cookie, allowlisted to `light` or `dark` because it lands in HTML. The Vite SPAs load `public/theme.js` as a
   blocking script in `<head>`. Never replace this with an inline `<script>` or `'unsafe-inline'`.
 - The toggle is one `<button class="theme-toggle" aria-pressed>` (`ThemeToggle`), mounted once in the root layout
-  inside `.prefs` next to `LangToggle`, with a text label from the dictionaries (`theme.dark`; the e2e finds it by its
-  class). No second control and no icon-only variant.
+  inside `.prefs` next to `LangToggle`. It is an icon button on the developer's request (2026-10-19): a moon while light,
+  a sun while dark, with the name in `aria-label` and `title` from the dictionaries (`theme.dark`; the e2e finds it by its
+  class). No second control.
 - UI work is done only after both themes were checked: contrast pairs for each, screenshots for each.
 
 ## 4. Components

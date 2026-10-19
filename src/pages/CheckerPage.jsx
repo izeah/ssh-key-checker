@@ -224,20 +224,18 @@ export function CheckerPage() {
         </div>
         {pane("public")}
         <div className="actions">
-          <span className="primary-action">
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={pending}
-              aria-keyshortcuts="Control+Enter Meta+Enter"
-            >
-              {pending ? t.actions.checking : t.actions.check}
-            </button>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={pending}
+            aria-keyshortcuts="Control+Enter Meta+Enter"
+          >
+            {pending ? t.actions.checking : t.actions.check}
             <span className="shortcut" aria-hidden="true">
               <kbd>{MOD}</kbd>
               <kbd>Enter</kbd>
             </span>
-          </span>
+          </button>
           {swappable && (
             <button
               type="button"

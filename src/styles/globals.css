@@ -229,6 +229,13 @@ kbd {
   background: var(--hover);
 }
 
+.prefs .theme-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 2.75rem;
+  padding: 0;
+}
+
 .theme-toggle[aria-pressed="true"],
 .theme-toggle[aria-pressed="true"]:hover {
   background: var(--fg);
@@ -383,17 +390,17 @@ kbd {
   margin-top: var(--space-2);
 }
 
-.primary-action {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
 .shortcut {
   display: inline-flex;
   gap: var(--space-1);
-  color: var(--muted);
   font-size: var(--text-xs);
+}
+
+/* The key caps sit on the accent: outline only, in the label colour, so contrast stays that of the label. */
+.btn-primary kbd {
+  border-color: color-mix(in srgb, var(--accent-fg) 55%, transparent);
+  background: transparent;
+  color: inherit;
 }
 
 /* No keyboard shortcut to advertise on a touch screen. */
@@ -460,6 +467,9 @@ kbd {
 }
 
 .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
   border-color: var(--accent);
   background: var(--accent);
   color: var(--accent-fg);
