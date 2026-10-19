@@ -20,24 +20,24 @@ export function LegalDialog({ kind, t, onClose }) {
       aria-labelledby="sheet-title"
       onClose={onClose}
       onClick={(e) => {
-        // The backdrop is part of the dialog element; the content sits in .sheet-body.
+        // The backdrop is part of the dialog element; the content sits in .sheet-head and .sheet-scroll.
         if (e.target === e.currentTarget) e.currentTarget.close();
       }}
     >
-      <div className="sheet-body">
-        <div className="sheet-head">
+      <div className="sheet-head">
+        <div>
           <h2 id="sheet-title">{doc.title}</h2>
-          <button
-            type="button"
-            className="btn btn-quiet"
-            onClick={() => ref.current?.close()}
-          >
-            {t.legal.close}
-          </button>
+          <p className="sheet-meta">{t.legal.version}</p>
         </div>
-        <p className="draft">
-          <Rich text={t.legal.draft} />
-        </p>
+        <button
+          type="button"
+          className="btn"
+          onClick={() => ref.current?.close()}
+        >
+          {t.legal.close}
+        </button>
+      </div>
+      <div className="sheet-scroll">
         {doc.sections.map((section) => (
           <section key={section.h}>
             <h3>{section.h}</h3>
@@ -48,6 +48,9 @@ export function LegalDialog({ kind, t, onClose }) {
             ))}
           </section>
         ))}
+        <p className="draft">
+          <Rich text={t.legal.note} />
+        </p>
       </div>
     </dialog>
   );

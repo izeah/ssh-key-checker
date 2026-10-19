@@ -13,6 +13,8 @@ import {
   samplePair,
 } from "../lib/ssh-key.js";
 
+// The modifier of the check shortcut: Cmd on Apple devices, Ctrl elsewhere (either one works).
+const MOD = /Mac|iPhone|iPad/.test(navigator.userAgent) ? "Cmd" : "Ctrl";
 const FIELDS = ["private", "public"];
 const READERS = { private: readPrivateKey, public: readPublicKey };
 const EMPTY = { private: "privateEmpty", public: "publicEmpty" };
@@ -204,16 +206,38 @@ export function CheckerPage() {
         <p className="proof">{t.hero.proof}</p>
       </section>
 
-      <form className="tool" onSubmit={check} noValidate aria-busy={pending}>
+      <form
+        className="tool"
+        onSubmit={check}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+            e.preventDefault();
+            if (!pending) e.currentTarget.requestSubmit();
+          }
+        }}
+        noValidate
+        aria-busy={pending}
+      >
         {pane("private")}
         <div className="seam" aria-hidden="true">
           <span key={sign}>{sign}</span>
         </div>
         {pane("public")}
         <div className="actions">
-          <button type="submit" className="btn btn-primary" disabled={pending}>
-            {pending ? t.actions.checking : t.actions.check}
-          </button>
+          <span className="primary-action">
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={pending}
+              aria-keyshortcuts="Control+Enter Meta+Enter"
+            >
+              {pending ? t.actions.checking : t.actions.check}
+            </button>
+            <span className="shortcut" aria-hidden="true">
+              <kbd>{MOD}</kbd>
+              <kbd>Enter</kbd>
+            </span>
+          </span>
           {swappable && (
             <button
               type="button"

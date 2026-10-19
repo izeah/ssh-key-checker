@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { normalizePaste } from "../../lib/ssh-key.js";
 import { Rich } from "../atoms/Rich.jsx";
 
 const PLACEHOLDER = {
@@ -28,6 +29,19 @@ export function KeyField({
   function pick(e) {
     onFiles(e.target.files);
     e.target.value = ""; // choosing the same file again must fire again
+  }
+  // A key pasted with literal "\n" (env var, JSON, shell history) becomes real lines right away.
+  function paste(e) {
+    const pasted = e.clipboardData.getData("text");
+    const fixed = normalizePaste(pasted);
+    if (fixed === pasted) return;
+    e.preventDefault();
+    const el = e.currentTarget;
+    const at = el.selectionStart;
+    onChange(value.slice(0, at) + fixed + value.slice(el.selectionEnd));
+    requestAnimationFrame(() =>
+      el.setSelectionRange(at + fixed.length, at + fixed.length),
+    );
   }
   function drop(e) {
     e.preventDefault();
@@ -61,6 +75,7 @@ export function KeyField({
         rows={9}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onPaste={paste}
         placeholder={PLACEHOLDER[field]}
         aria-invalid={error ? "true" : undefined}
         aria-describedby={`${id}-hint ${id}-status`}

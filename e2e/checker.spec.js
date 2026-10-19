@@ -266,7 +266,7 @@ test("terms and privacy open as dialogs and close by button, Escape and backdrop
     await trigger.click();
     const dialog = page.getByRole("dialog", { name: title });
     await expect(dialog).toBeVisible();
-    await expect(dialog).toContainText("[REAL DATA]");
+    await expect(dialog).toContainText(t.legal.version);
     await expect(page).toHaveURL(/\/$/); // same page, no navigation
 
     await page.keyboard.press("Escape");
@@ -424,4 +424,96 @@ test("no console errors or CSP violations in a full run", async ({ page }) => {
   await page.locator("button.lang-toggle").click();
   await page.locator("button.theme-toggle").click();
   expect(problems).toEqual([]);
+});
+
+test("Cmd or Ctrl + Enter runs the check from any field, and the shortcut is shown next to the button", async ({
+  page,
+}) => {
+  const k = fx.keys.ed25519;
+  await expect(page.locator(".shortcut kbd")).toHaveText([
+    /^(Cmd|Ctrl)$/,
+    "Enter",
+  ]);
+  await fill(page, k.private, k.public);
+  await priv(page).focus();
+  await page.keyboard.press("Control+Enter");
+  await expect(result(page)).toContainText(t.result.match.title);
+
+  await page.getByRole("button", { name: t.actions.clearBoth }).click();
+  await fill(page, k.private, fx.keys.ed25519b.public);
+  await pub(page).focus();
+  await page.keyboard.press("Meta+Enter");
+  await expect(result(page)).toContainText(t.result.mismatch.title);
+});
+
+test("a key pasted with literal \\n becomes real lines at once", async ({
+  page,
+}) => {
+  const k = fx.keys.ed25519;
+  const flat = `"${k.private.trim().split("\n").join("\\n")}"`;
+  const paste = (selector, text) =>
+    page.locator(selector).evaluate((el, value) => {
+      const data = new DataTransfer();
+      data.setData("text", value);
+      el.dispatchEvent(
+        new ClipboardEvent("paste", {
+          clipboardData: data,
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    }, text);
+  await priv(page).focus();
+  await paste("#key-private", flat);
+  await expect(priv(page)).toHaveValue(k.private.trim());
+  await paste("#key-public", `${k.public.trim()}\\n`);
+  await check(page);
+  await expect(result(page)).toContainText(t.result.match.title);
+  // Ordinary text is pasted untouched.
+  await priv(page).fill("");
+  await paste("#key-private", "plain text, no escapes");
+  await expect(priv(page)).toHaveValue("");
+});
+
+test("the dialog title and Close button stay put while the text scrolls", async ({
+  page,
+}) => {
+  for (const size of [
+    { width: 375, height: 700 },
+    { width: 1280, height: 700 },
+  ]) {
+    await page.setViewportSize(size);
+    await page
+      .getByRole("button", { name: t.footer.privacy, exact: true })
+      .click();
+    const head = page.locator(".sheet-head");
+    const scroll = page.locator(".sheet-scroll");
+    await expect(head).toBeVisible();
+    await page.waitForTimeout(300); // the sheet slides in
+    const before = await head.boundingBox();
+    await scroll.evaluate((el) => el.scrollTo(0, el.scrollHeight));
+    expect(await scroll.evaluate((el) => el.scrollTop)).toBeGreaterThan(200);
+    const after = await head.boundingBox();
+    expect(after.y).toBe(before.y);
+    const close = page.getByRole("button", { name: t.legal.close });
+    await expect(close).toBeInViewport();
+    await close.click();
+    await expect(page.getByRole("dialog")).toBeHidden();
+  }
+});
+
+test("the language switch is an inline link with an icon, not a toggle", async ({
+  page,
+}) => {
+  const nav = page.locator("nav.lang");
+  await expect(nav.locator("svg")).toBeVisible();
+  await expect(nav.locator("[aria-current]")).toHaveText(t.langName);
+  await expect(nav.getByRole("button")).toHaveText(dict("en").langName);
+  await expect(nav.getByRole("button")).toHaveCSS(
+    "text-decoration-line",
+    "underline",
+  );
+  await nav.getByRole("button").click();
+  await expect(nav.locator("[aria-current]")).toHaveText(dict("en").langName);
+  await expect(nav.getByRole("button")).toHaveText(t.langName);
 });

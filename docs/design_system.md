@@ -130,9 +130,10 @@
   a new key in **both** files; `src/lib/lang.test` fail when one is missing.
 - Not translated: data from the API (user names, `roles.name`, anything a user typed or an admin edited) and the
   values in form fields.
-- `LangToggle` is one `<button class="lang-toggle">` labelled with the other language's name in that language (its
-  `lang` attribute set, so a screen reader pronounces it right), next to `ThemeToggle` on every screen, the not-found
-  and error screens included.
+- `LangToggle` is an inline `<nav class="lang">` with a globe icon: the language showing is plain text (`aria-current`), the
+  other language is one `<button class="lang-toggle">` styled as a link, its `lang` attribute set so a screen reader
+  pronounces it right. It sits next to `ThemeToggle` on every screen, the not-found and error screens included. (Changed
+  from a single toggle button on the developer's request, 2026-10-19.)
 - A switch re-renders in place: no navigation and no reload, so a form keeps what the user typed. It writes the `lang`
   cookie (functional, one year) and `<html lang>`, which always matches what is shown. The server reads the cookie,
   allowlisted to `id` or `en`; without it `DEFAULT_LANG` decides, never `Accept-Language` (many browsers in Indonesia

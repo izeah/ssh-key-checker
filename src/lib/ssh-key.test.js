@@ -5,6 +5,7 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { makeFixtures } from "../../e2e/keys.mjs";
 import {
   checkPair,
+  normalizePaste,
   readPrivateKey,
   readPublicKey,
   samplePair,
@@ -326,3 +327,23 @@ test("fuzz: 2000 mutated inputs never throw and errors are plain keys", async ()
       ]).toContain((await checkPair(a.key, b.key)).status);
   }
 }, 120_000);
+
+describe("pasted text with literal \\n", () => {
+  test("becomes real line breaks, quotes around it are dropped", () => {
+    expect(normalizePaste("a\\nb\\r\\nc")).toBe("a\nb\nc");
+    expect(normalizePaste('"a\\nb"')).toBe("a\nb");
+    expect(normalizePaste("'a\\nb'")).toBe("a\nb");
+  });
+  test("leaves everything else alone", () => {
+    for (const t of ["a\nb with \\n inside", "no escapes", "", "  spaced  "])
+      expect(normalizePaste(t)).toBe(t);
+  });
+  test("a key written with literal \\n is read as that key", async () => {
+    const k = fx.keys.ed25519;
+    const flat = k.private.trim().split("\n").join("\\n");
+    expect(flat).not.toContain("\n");
+    const r = await pair(`"${flat}"`, k.public.trim());
+    expect(r.status).toBe("match");
+    expect((await pair(flat, `${k.public.trim()}\\n`)).status).toBe("match");
+  });
+});

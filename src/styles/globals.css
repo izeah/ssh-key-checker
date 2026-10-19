@@ -110,10 +110,28 @@ a {
   color: var(--accent);
 }
 
-code {
+code,
+kbd {
   font-family: var(--font-mono);
-  font-size: 0.9em;
+  font-size: 0.875em;
   overflow-wrap: anywhere;
+}
+
+/* Inline code and key caps read as small chips so a path, a command or a shortcut stands out of the prose. */
+code:not(.fp),
+kbd {
+  padding: 0.1em 0.4em;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--hover);
+  color: var(--fg);
+}
+
+kbd {
+  padding-block: 0.05em;
+  border-bottom-width: 2px;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .muted {
@@ -159,7 +177,9 @@ code {
 /* LangToggle and ThemeToggle: the theme toggle is filled while dark mode is on. */
 .prefs {
   display: flex;
-  gap: var(--space-2);
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
 }
 
 .prefs button,
@@ -176,6 +196,36 @@ code {
 }
 
 .prefs button:hover {
+  background: var(--hover);
+}
+
+.prefs .lang {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-inline: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.prefs .lang-icon {
+  flex: none;
+  color: var(--muted);
+}
+
+.prefs .lang [aria-current] {
+  font-weight: 600;
+}
+
+.prefs .lang .lang-toggle {
+  min-height: 2.75rem;
+  padding: var(--space-2);
+  border-color: transparent;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.prefs .lang .lang-toggle:hover {
   background: var(--hover);
 }
 
@@ -331,6 +381,26 @@ code {
   gap: var(--space-2) var(--space-3);
   align-items: center;
   margin-top: var(--space-2);
+}
+
+.primary-action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.shortcut {
+  display: inline-flex;
+  gap: var(--space-1);
+  color: var(--muted);
+  font-size: var(--text-xs);
+}
+
+/* No keyboard shortcut to advertise on a touch screen. */
+@media (hover: none) {
+  .shortcut {
+    display: none;
+  }
 }
 
 .sample-note {
@@ -594,38 +664,48 @@ dialog.sheet::backdrop {
   background: var(--scrim);
 }
 
-.sheet-body {
-  max-height: 88dvh;
-  padding: var(--space-6) var(--gutter) var(--space-8);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-}
-
 .sheet-head {
   display: flex;
+  flex: none;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
+  padding: var(--space-4) var(--gutter);
+  border-bottom: 1px solid var(--rule);
+  background: var(--surface);
 }
 
 .sheet-head h2 {
   font-size: var(--text-xl);
 }
 
-.sheet-body section {
+.sheet-meta {
+  color: var(--muted);
+  font-size: var(--text-xs);
+}
+
+.sheet-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: var(--space-2) var(--gutter) var(--space-8);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.sheet-scroll section {
   margin-top: var(--space-6);
 }
 
-.sheet-body h3 {
+.sheet-scroll h3 {
   margin-bottom: var(--space-2);
   font-size: var(--text-base);
 }
 
-.sheet-body section p {
+.sheet-scroll section p {
   max-width: var(--measure);
 }
 
-.sheet-body section p + p {
+.sheet-scroll section p + p {
   margin-top: var(--space-2);
 }
 
@@ -638,6 +718,8 @@ dialog.sheet::backdrop {
 }
 
 dialog.sheet[open] {
+  display: flex;
+  flex-direction: column;
   translate: 0 0;
   transition: translate 180ms ease-out;
 }
@@ -655,11 +737,6 @@ dialog.sheet[open] {
     height: 100dvh;
     max-height: none;
     border-radius: var(--radius-lg) 0 0 var(--radius-lg);
-  }
-
-  .sheet-body {
-    height: 100%;
-    max-height: none;
   }
 
   @starting-style {

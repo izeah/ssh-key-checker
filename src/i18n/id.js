@@ -2,6 +2,7 @@
 // Backticks mark code: <Rich> renders them as <code>. Key comments are user data and never live here.
 export const id = {
   langName: "Bahasa Indonesia",
+  langNav: "Bahasa",
   theme: {
     dark: "Mode gelap",
   },
@@ -29,7 +30,7 @@ export const id = {
     drop: "atau tarik ke sini",
     dropping: "Lepas file di sini",
     clear: "Kosongkan",
-    tip: "Folder `.ssh` tidak kelihatan? Di macOS, tekan Cmd + Shift + . (titik) di jendela pilih file. Di Windows, ketik `%USERPROFILE%\\.ssh` di kolom alamat.",
+    tip: "Folder `.ssh` tidak kelihatan? Di macOS, tekan `Cmd + Shift + .` (titik) di jendela pilih file. Di Windows, ketik `%USERPROFILE%\\.ssh` di kolom alamat.",
   },
   status: {
     read: (type, bits) => `Terbaca: ${type}, ${bits} bit`,
@@ -140,7 +141,7 @@ export const id = {
     items: [
       {
         q: "Apakah kuncinya dikirim ke server?",
-        a: "Tidak. Kode di halaman ini membaca dan mengecek kunci di browser kamu, dan aturan keamanan halaman (Content Security Policy) membuat browser menolak koneksi keluar seperti fetch, XHR, atau WebSocket. Buktikan sendiri: buka tab Network di DevTools, lalu tekan Cek pasangannya. Tidak ada request baru yang muncul.",
+        a: "Tidak. Kode di halaman ini membaca dan mengecek kunci di browser kamu, dan aturan keamanan halaman (Content Security Policy) membuat browser menolak koneksi keluar seperti `fetch`, `XHR`, atau `WebSocket`. Buktikan sendiri: buka tab `Network` di DevTools, lalu tekan Cek pasangannya (atau `Cmd + Enter`). Tidak ada request baru yang muncul.",
       },
       {
         q: "Amankah menempel private key produksi di sini?",
@@ -167,8 +168,8 @@ export const id = {
   },
   legal: {
     close: "Tutup",
-    draft:
-      "[REAL DATA] Teks contoh. Susunannya mengikuti prinsip privasi ISO/IEC 29100, tetapi ini bukan klaim sertifikasi dan belum ditinjau konsultan hukum. Ganti dengan teks resmi sebelum rilis.",
+    version: "Versi 1.0 · Berlaku sejak 19 Oktober 2026",
+    note: "Susunan dokumen ini mengikuti prinsip privasi ISO/IEC 29100 dan bukan klaim sertifikasi. Nama penyedia, alamat, kontak, dan yurisdiksi di atas adalah data contoh (dummy): ganti dengan data resmi sebelum rilis.",
     terms: {
       title: "Syarat penggunaan",
       sections: [
@@ -206,19 +207,19 @@ export const id = {
         {
           h: "6. Batas tanggung jawab",
           p: [
-            "Sejauh diizinkan hukum, penyedia layanan tidak bertanggung jawab atas kerugian yang timbul dari pemakaian atau ketidakmampuan memakai halaman ini. [REAL DATA]",
+            "Sejauh diizinkan hukum, penyedia layanan tidak bertanggung jawab atas kerugian yang timbul dari pemakaian atau ketidakmampuan memakai halaman ini, kecuali akibat kelalaian berat atau kesengajaan penyedia layanan.",
           ],
         },
         {
           h: "7. Perubahan syarat",
           p: [
-            "Syarat ini bisa berubah. Versi terbaru selalu ada di halaman ini. [REAL DATA]",
+            "Syarat ini bisa berubah. Perubahan penting diberi tanggal berlaku baru di bagian atas dokumen ini.",
           ],
         },
         {
           h: "8. Hukum yang berlaku dan kontak",
           p: [
-            "Hukum yang berlaku, yurisdiksi, dan alamat kontak penyedia layanan: [REAL DATA]",
+            "Syarat ini tunduk pada hukum Republik Indonesia. Sengketa diselesaikan lebih dulu dengan musyawarah, dan bila tidak berhasil di Pengadilan Negeri Jakarta Selatan. Penyedia layanan: Tim SSH Key Checker, Jl. Contoh Raya No. 1, Jakarta Selatan 12000, Indonesia. Kontak: `legal@example.com`.",
           ],
         },
       ],
@@ -247,7 +248,7 @@ export const id = {
         {
           h: "4. Penyimpanan dan penghapusan",
           p: [
-            "Halaman ini tidak memakai localStorage, sessionStorage, IndexedDB, maupun cookie untuk kunci. Isi kedua kolom hilang saat kamu menekan Kosongkan, memuat ulang halaman, atau menutup tab.",
+            "Halaman ini tidak memakai `localStorage`, `sessionStorage`, `IndexedDB`, maupun cookie untuk kunci. Isi kedua kolom hilang saat kamu menekan Kosongkan, memuat ulang halaman, atau menutup tab.",
           ],
         },
         {
@@ -259,7 +260,7 @@ export const id = {
         {
           h: "6. Pihak ketiga",
           p: [
-            "Halaman ini tidak memuat skrip, font, atau layanan dari pihak ketiga. Penyedia hosting bisa mencatat akses standar seperti alamat IP dan waktu kunjungan di log servernya: [REAL DATA]",
+            "Halaman ini tidak memuat skrip, font, atau layanan dari pihak ketiga. Penyedia hosting bisa mencatat akses standar seperti alamat IP dan waktu kunjungan di log servernya, yang umumnya disimpan paling lama 30 hari untuk keamanan dan pemecahan masalah.",
           ],
         },
         {
@@ -271,13 +272,13 @@ export const id = {
         {
           h: "8. Hak kamu dan kontak",
           p: [
-            "Karena kami tidak menyimpan data pribadi tentang kamu, tidak ada data yang perlu diakses atau dihapus dari sisi kami. Kontak untuk pertanyaan privasi: [REAL DATA]",
+            "Karena kami tidak menyimpan data pribadi tentang kamu, tidak ada data yang perlu diakses atau dihapus dari sisi kami. Kontak untuk pertanyaan privasi: `privacy@example.com`. Kami membalas dalam 14 hari kerja.",
           ],
         },
         {
           h: "9. Perubahan kebijakan",
           p: [
-            "Kebijakan ini bisa berubah. Versi terbaru selalu ada di halaman ini. [REAL DATA]",
+            "Kebijakan ini bisa berubah. Perubahan penting diberi tanggal berlaku baru di bagian atas dokumen ini.",
           ],
         },
       ],

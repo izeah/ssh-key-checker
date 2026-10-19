@@ -50,8 +50,9 @@ sheet dialogs), built with native elements and no UI library.
 
 **Reason**: See `DESIGN.md` (each choice has its one-line reason). Fonts are the only new dependencies.
 
-**Consequences**: The legal dialogs hold sample text marked `[REAL DATA]` (structure after ISO/IEC 29100 principles, no
-compliance claim). `grep -rn "\[REAL DATA\]" src` must print nothing before a release.
+**Consequences**: The legal dialogs hold dummy but complete text (structure after ISO/IEC 29100 principles, no compliance
+claim, dummy data disclosed in a note). The developer asked for it on 2026-10-19 instead of `[REAL DATA]` markers; replace
+the provider, address, contacts and jurisdiction with official data before a release.
 
 ## Decision Template
 

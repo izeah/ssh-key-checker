@@ -2,6 +2,7 @@
 // Backticks mark code: <Rich> renders them as <code>. Key comments are user data and never live here.
 export const en = {
   langName: "English",
+  langNav: "Language",
   theme: {
     dark: "Dark mode",
   },
@@ -29,7 +30,7 @@ export const en = {
     drop: "or drop it here",
     dropping: "Drop the file here",
     clear: "Clear",
-    tip: "Can't see the `.ssh` folder? On macOS, press Cmd + Shift + . (period) in the file picker. On Windows, type `%USERPROFILE%\\.ssh` in the address bar.",
+    tip: "Can't see the `.ssh` folder? On macOS, press `Cmd + Shift + .` (period) in the file picker. On Windows, type `%USERPROFILE%\\.ssh` in the address bar.",
   },
   status: {
     read: (type, bits) => `Read as ${type}, ${bits}-bit`,
@@ -140,7 +141,7 @@ export const en = {
     items: [
       {
         q: "Are the keys sent to a server?",
-        a: "No. The code on this page reads and checks the keys in your browser, and the page's security policy (Content Security Policy) makes the browser refuse outgoing connections such as fetch, XHR, or WebSocket. Check it yourself: open the Network tab in DevTools, then press Check the pair. No new request appears.",
+        a: "No. The code on this page reads and checks the keys in your browser, and the page's security policy (Content Security Policy) makes the browser refuse outgoing connections such as `fetch`, `XHR`, or `WebSocket`. Check it yourself: open the `Network` tab in DevTools, then press Check the pair (or `Cmd + Enter`). No new request appears.",
       },
       {
         q: "Is it safe to paste a production private key here?",
@@ -167,8 +168,8 @@ export const en = {
   },
   legal: {
     close: "Close",
-    draft:
-      "[REAL DATA] Sample text. Its structure follows the ISO/IEC 29100 privacy principles, but it is not a certification claim and no lawyer has reviewed it. Replace it with the official text before release.",
+    version: "Version 1.0 · Effective 19 October 2026",
+    note: "This document is structured after the ISO/IEC 29100 privacy principles and is not a certification claim. The provider name, address, contact, and jurisdiction above are sample (dummy) data: replace them with official data before release.",
     terms: {
       title: "Terms of use",
       sections: [
@@ -206,19 +207,19 @@ export const en = {
         {
           h: "6. Limitation of liability",
           p: [
-            "To the extent the law allows, the provider is not liable for losses arising from using, or being unable to use, this page. [REAL DATA]",
+            "To the extent the law allows, the provider is not liable for losses arising from using, or being unable to use, this page, except for gross negligence or intentional misconduct by the provider.",
           ],
         },
         {
           h: "7. Changes to the terms",
           p: [
-            "These terms may change. The latest version is always on this page. [REAL DATA]",
+            "These terms may change. Material changes get a new effective date at the top of this document.",
           ],
         },
         {
           h: "8. Governing law and contact",
           p: [
-            "Governing law, jurisdiction, and the provider's contact address: [REAL DATA]",
+            "These terms are governed by the laws of the Republic of Indonesia. Disputes are first settled by discussion and, failing that, by the South Jakarta District Court. Provider: SSH Key Checker Team, Jl. Contoh Raya No. 1, South Jakarta 12000, Indonesia. Contact: `legal@example.com`.",
           ],
         },
       ],
@@ -247,7 +248,7 @@ export const en = {
         {
           h: "4. Storage and deletion",
           p: [
-            "This page uses no localStorage, sessionStorage, IndexedDB, or cookie for keys. The contents of both fields disappear when you press Clear, reload the page, or close the tab.",
+            "This page uses no `localStorage`, `sessionStorage`, `IndexedDB`, or cookie for keys. The contents of both fields disappear when you press Clear, reload the page, or close the tab.",
           ],
         },
         {
@@ -259,7 +260,7 @@ export const en = {
         {
           h: "6. Third parties",
           p: [
-            "This page loads no scripts, fonts, or services from third parties. The hosting provider may record standard access data such as IP address and visit time in its server logs: [REAL DATA]",
+            "This page loads no scripts, fonts, or services from third parties. The hosting provider may record standard access data such as IP address and visit time in its server logs, usually kept for at most 30 days for security and troubleshooting.",
           ],
         },
         {
@@ -271,13 +272,13 @@ export const en = {
         {
           h: "8. Your rights and contact",
           p: [
-            "Because we keep no personal data about you, there is nothing on our side to access or delete. Contact for privacy questions: [REAL DATA]",
+            "Because we keep no personal data about you, there is nothing on our side to access or delete. Contact for privacy questions: `privacy@example.com`. We reply within 14 working days.",
           ],
         },
         {
           h: "9. Changes to this policy",
           p: [
-            "This policy may change. The latest version is always on this page. [REAL DATA]",
+            "This policy may change. Material changes get a new effective date at the top of this document.",
           ],
         },
       ],

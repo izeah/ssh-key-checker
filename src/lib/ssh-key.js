@@ -319,7 +319,19 @@ async function fromPkcs8(der) {
 
 // ---- Private keys ----------------------------------------------------------
 
-const clean = (text) => text.replace(/^﻿/, "").replace(/\r\n?/g, "\n");
+// A key copied from an env var, a JSON file or a shell history carries a literal backslash-n instead of
+// line breaks, sometimes inside quotes. Only text with no real line break is touched.
+export function normalizePaste(text) {
+  let t = text.trim();
+  if (/[\r\n]/.test(t) || !t.includes("\\n")) return text;
+  if (/^(["']).*\1$/s.test(t)) t = t.slice(1, -1);
+  return t.replace(/\\r\\n|\\n/g, "\n");
+}
+
+const clean = (text) =>
+  normalizePaste(text)
+    .replace(/^\uFEFF/, "")
+    .replace(/\r\n?/g, "\n");
 const linesOf = (text) =>
   clean(text)
     .split("\n")
