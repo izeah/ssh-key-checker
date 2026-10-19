@@ -18,7 +18,7 @@ export const dict = (lang) => DICTS[lang];
 export const otherLang = (lang) => (lang === "id" ? "en" : "id");
 
 // Every page's <title>: what the page is, then the product.
-export const pageTitle = (page) => `${page} · Ssh Key Checker`;
+export const pageTitle = (page) => `${page} · SSH Key Checker`;
 
 // Only these two values may reach the page: the cookie lands in an HTML attribute.
 export function langFrom(value) {
@@ -29,14 +29,4 @@ export function langFrom(value) {
 export function langFromCookieHeader(header) {
   const found = header?.split("; ").find((c) => c.startsWith("lang="));
   return langFrom(found?.slice("lang=".length));
-}
-
-// A failed sign-in as a key of login.errors, not as text: an error already on screen then
-// follows a language switch. status: the ApiError status, undefined when the server was not reached.
-
-export function loginError(status) {
-  if (status === undefined) return "offline";
-  if (status === 401) return "invalidCredentials";
-  if (status === 429) return "tooManyAttempts";
-  return "failed";
 }
