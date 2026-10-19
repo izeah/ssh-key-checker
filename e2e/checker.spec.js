@@ -366,6 +366,7 @@ test("nothing leaves the browser and nothing is stored", async ({
     );
     navigator.sendBeacon("/beacon", "x");
     const ws = await new Promise((done) => {
+      // nosemgrep: javascript.lang.security.detect-insecure-websocket.detect-insecure-websocket -- the test proves the CSP refuses an outgoing socket, so it must try one
       const sock = new WebSocket(`ws://${location.host}/socket`);
       sock.onopen = () => done("opened");
       sock.onerror = () => done("blocked");

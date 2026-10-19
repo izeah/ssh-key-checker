@@ -675,7 +675,7 @@ dialog.sheet[open] {
   padding-top: var(--space-12);
 }
 
-.missing p {
+.missing .back {
   margin-top: var(--space-4);
 }
 

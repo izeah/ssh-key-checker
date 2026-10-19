@@ -1,4 +1,8 @@
-# Testing — Ssh Key Checker
+# Testing — SSH Key Checker
+
+**This project:** `npm test` (Vitest, needs `ssh-keygen` on PATH), `make test-e2e` (Playwright, production build),
+`make ui-shots`. See `docs/architecture.md` → Testing. No database, no third-party API, nothing to mock: the keys are made
+by the real `ssh-keygen` per run. The generic notes below come from the template.
 
 ## Strategy
 

@@ -102,6 +102,9 @@ const CURVES = {
   nistp521: { crv: "P-521", size: 66, bits: 521, oid: "2b81040023" },
 };
 const EC_BY_POINT_LENGTH = { 65: "nistp256", 97: "nistp384", 133: "nistp521" };
+// Names come from the key text: never look one up on the prototype chain ("__proto__").
+const curveOf = (name) =>
+  Object.hasOwn(CURVES, name) ? CURVES[name] : undefined;
 const rsaBlob = (n, e) => cat(wireStr("ssh-rsa"), mpint(e), mpint(n));
 const edBlob = (k) => cat(wireStr("ssh-ed25519"), sshStr(k));
 const ecBlob = (curve, q) =>
@@ -141,7 +144,7 @@ function parseBlob(blob) {
     };
   } else if (label.startsWith("ecdsa-sha2-")) {
     const name = label.slice("ecdsa-sha2-".length);
-    const c = CURVES[name];
+    const c = curveOf(name);
     if (!c) return unsupported(label);
     if (r.text() !== name) bad("damaged");
     const q = r.str();
@@ -365,7 +368,7 @@ async function fromOpenssh(der) {
     const name = p.text();
     const q = p.str();
     const d = unsigned(p.str());
-    const size = CURVES[name]?.size;
+    const size = curveOf(name)?.size;
     if (!size || d.length > size || !eq(ecBlob(name, q), info.blob))
       bad("inconsistent");
     jwk = { ...info.jwk, d: toB64u(cat(new Uint8Array(size - d.length), d)) };

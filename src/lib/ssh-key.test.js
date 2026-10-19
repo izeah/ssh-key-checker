@@ -240,6 +240,11 @@ describe("error keys", () => {
     expect(
       await pub(line("ecdsa-sha2-nistp192", wire("ecdsa-sha2-nistp192"))),
     ).toBe("unsupportedType");
+    // A curve name is looked up from key text: names on Object.prototype must not resolve.
+    for (const name of ["__proto__", "constructor", "toString"])
+      expect(["unsupportedType", "publicNotKey"]).toContain(
+        await pub(line(`ecdsa-sha2-${name}`, wire(`ecdsa-sha2-${name}`))),
+      );
     expect(await pub("y".repeat(40_000))).toBe("tooBig");
   });
 });

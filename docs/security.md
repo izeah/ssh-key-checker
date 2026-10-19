@@ -1,4 +1,26 @@
-# Security — Ssh Key Checker
+# Security — SSH Key Checker
+
+## This project: handling private keys in the browser
+
+> The sections below are the generic template for projects with a backend; most do not apply here (no API, no database,
+> no accounts). What does apply is this section, plus the secrets, dependency and logging rules.
+
+- **Nothing leaves the browser.** No `fetch`, XHR or WebSocket in the code, and the CSP forbids them anyway
+  (`connect-src 'none'`, `form-action 'none'`). `e2e/checker.spec.js` proves it: only the page's own files load, and
+  fetch, WebSocket and `sendBeacon` each end in a CSP violation.
+- **Nothing is stored.** Keys live in React state until Clear, reload or closing the tab. No Web Storage, IndexedDB, cookie
+  or URL (asserted by e2e). Cookies are only `lang` and `theme`. JavaScript cannot wipe strings from memory, so the docs
+  do not claim it.
+- **Passphrases are never requested.** Encrypted keys are not decrypted.
+- **Textareas** disable spellcheck (Chrome's enhanced spellcheck sends text to Google), autocomplete, autocorrect and
+  Grammarly, and ask password managers to ignore them.
+- **Parsing is bounded**: 32 KB cap before parsing, every length field is bounds-checked, base64 is strict, curve names are
+  looked up with `Object.hasOwn`, CryptoKeys are imported non-extractable (Ed25519 PKCS#8 uses an extractable key for a
+  moment to derive the public half; it is re-imported non-extractable). A mutation fuzz checks that no input throws.
+- **Errors never echo key text.** They are dictionary keys.
+- **No `dangerouslySetInnerHTML`.** Comments from keys render as text; Trusted Types is required by the CSP.
+- **Known limit**: a browser extension that can read every page can read what you paste. Stated in the FAQ.
+- **Test keys** are made per run into a temp dir and deleted; nothing is committed (`*.pem`, `*.key` stay git-ignored).
 
 ## Secrets & Credentials
 

@@ -1,43 +1,29 @@
-# Current Progress — Ssh Key Checker
+# Current Progress — SSH Key Checker
 
 ## Current Task
-Project initialization — boilerplate generated on 2026-10-19.
-
-## Objective
-Set up local development environment and implement core features.
+Done (2026-10-19): single-page SSH key pair checker, client-side only. Branch `feat/ssh-key-checker`, not pushed.
 
 ## Completed
-- [x] Project boilerplate generated with Vibe Coding Boilerplate Generator
-- [x] Documentation structure created
-
-## In Progress
-- [ ] Local environment setup
-
-## Files Changed
-_(update this section as you work)_
+- Key engine `src/lib/ssh-key.js`: OpenSSH, PEM PKCS#1, SEC1, PKCS#8 private keys; OpenSSH, RFC 4716, SPKI, PKCS#1 public
+  keys; ED25519, RSA, ECDSA P-256/384/521; SHA256 fingerprint equal to `ssh-keygen -lf`; sign and verify pair check.
+- One page: paste or upload (choose, drop, two files at once), human error messages (about 40 keys), swap, sample pair,
+  copy fingerprint, FAQ, Terms and Privacy as native `<dialog>` sheets, Indonesian and English, light and dark.
+- Scaffold auth, router and react-query removed; CSP `connect-src 'none'`, `form-action 'none'`, Trusted Types.
+- DESIGN.md approved, ADRs 002 to 004, docs updated.
 
 ## Tests
-```bash
-# Run tests
-go test ./...   # or: npm test
-```
-
-## Test Results
-_(none yet)_
+`npm test` 19 passed (real ssh-keygen fixtures, 2,000-case fuzz). `npx playwright test` 23 passed. `make sast` 0 findings.
+`npm audit --omit=dev` 0 vulnerabilities. Manual click-through in the browser pane: mismatch, match, English switch,
+dialog open and Escape with focus back, 375 px (no overflow, tap targets 44 px), console clean, no request at check time.
 
 ## Important Decisions
-- Framework: React/Vite (Frontend SPA)
-- Language: javascript
+See `docs/decisions.md` 002 to 004.
 
 ## Known Issues
-_(none yet)_
+- Legal dialogs hold sample text marked `[REAL DATA]` (Q3). `grep -rn "\[REAL DATA\]" src` must print nothing before release.
+- File picking and drag and drop are covered by Playwright, not by hand in the browser pane (it cannot open a file chooser).
+- The `≟` glyph falls back to a system font (IBM Plex Mono latin subset lacks it).
 
 ## Next Steps
-1. `cp .env.example .env` and fill in local values.
-2. Start local dependencies (`make pg-start redis-start` or `docker-compose up`).
-3. Run the application locally.
-4. Begin implementing the first feature.
-
-## Notes
-Update this file before a context transition or at the end of each meaningful work session.
-Do not turn this into a conversation transcript — keep it as durable project state.
+1. Replace the `[REAL DATA]` legal text with the official text, and the hosting-log and contact lines.
+2. Decide on hosting (HTTPS needed for WebCrypto) and push the branch.

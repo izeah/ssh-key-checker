@@ -7,7 +7,7 @@ export function NotFoundPage() {
     <main className="page missing">
       <title>{pageTitle(t.notFound.title)}</title>
       <h1>{t.notFound.title}</h1>
-      <p>
+      <p className="back">
         <a href="/">{t.notFound.home}</a>
       </p>
     </main>

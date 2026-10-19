@@ -74,18 +74,22 @@ export function PairResult({ result, t, copied, onCopy }) {
       <p className="result-body">
         <Rich text={body} />
       </p>
-      {status === "match" && (
+      {isMatch && (
         <dl className="facts">
-          <dt>{r.type}</dt>
-          <dd>
-            {result.publicType}, {result.bits} bit
-          </dd>
-          {result.comment && (
+          {status === "match" && (
             <>
-              <dt>{r.comment}</dt>
+              <dt>{r.type}</dt>
               <dd>
-                <code>{result.comment}</code>
+                {result.publicType}, {result.bits} bit
               </dd>
+              {result.comment && (
+                <>
+                  <dt>{r.comment}</dt>
+                  <dd>
+                    <code>{result.comment}</code>
+                  </dd>
+                </>
+              )}
             </>
           )}
           <dt>{r.fingerprint}</dt>
@@ -104,15 +108,6 @@ export function PairResult({ result, t, copied, onCopy }) {
         <p className="result-body">
           <Rich text={r.weakRsa} />
         </p>
-      )}
-      {status === "publicPartMatch" && (
-        <dl className="facts">
-          <dt>{r.fingerprint}</dt>
-          <dd>
-            <code className="fp">{result.publicFingerprint}</code>
-            <span className="fp-actions">{copy(result.publicFingerprint)}</span>
-          </dd>
-        </dl>
       )}
       {status === "mismatch" && (
         <dl className="facts">
