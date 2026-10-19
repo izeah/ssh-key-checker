@@ -56,6 +56,7 @@ export function makeFixtures() {
     };
   };
   gen("ed25519", "ed25519");
+  gen("ed25519b", "ed25519");
   gen("rsa1024", "rsa", ["-b", "1024"]);
   gen("rsa2048", "rsa", ["-b", "2048"]);
   gen("rsa3072", "rsa", ["-b", "3072"]);

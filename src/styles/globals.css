@@ -448,10 +448,6 @@ code {
 }
 
 .result-body {
-  color: var(--danger);
-}
-
-.result-body {
   max-width: var(--measure);
   margin-top: var(--space-3);
 }
@@ -467,7 +463,11 @@ code {
 .result[data-status="mismatch"] .result-title,
 .result[data-status="typeMismatch"] .result-title,
 .result[data-status="failed"] .result-title,
-.result[data-status="blocked"] .facts {
+.result[data-status="blocked"] .result-body {
+  color: var(--danger);
+}
+
+.facts {
   display: grid;
   grid-template-columns: max-content minmax(0, 1fr);
   gap: var(--space-2) var(--space-6);
